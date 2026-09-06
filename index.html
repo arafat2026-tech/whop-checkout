@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
@@ -121,17 +121,38 @@
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--black); color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 9999; min-width: 200px; text-align: center; }
     .toast.show { opacity: 1; }
 
+    /* MOBILE ORDER SUMMARY TOGGLE */
+    .mobile-summary-bar { display: none; }
+
     /* MOBILE */
     @media (max-width: 780px) {
-      .checkout-wrap { grid-template-columns: 1fr; }
-      .right-col { order: -1; }
+      body { background: #fff; }
+      .site-header { border-bottom: 1px solid #e0e0e0; }
+      .header-inner { padding: 10px 16px; }
+      .header-inner img { height: 42px; }
+      .checkout-wrap { grid-template-columns: 1fr; gap: 0; margin: 0; padding: 0; }
+      .right-col { order: -1; display: none; }
+      .right-col.mobile-open { display: flex; flex-direction: column; background: #f5f5f7; border-bottom: 1px solid #e0e0e0; padding: 16px; gap: 12px; }
+      .card { border-radius: 0; border-left: none; border-right: none; border-top: none; }
+      .card-body { padding: 20px 16px; }
+
+      /* Mobile summary toggle bar */
+      .mobile-summary-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        background: #f5f5f7; border-bottom: 1px solid #e0e0e0;
+        padding: 14px 16px; cursor: pointer;
+      }
+      .mobile-summary-left { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--red); }
+      .mobile-summary-left svg { transition: transform 0.2s; }
+      .mobile-summary-left svg.open { transform: rotate(180deg); }
+      .mobile-summary-total { font-size: 16px; font-weight: 800; color: var(--text); }
     }
     @media (max-width: 540px) {
       .form-row, .form-row-3 { grid-template-columns: 1fr; }
-      .card-body { padding: 18px 14px; }
       .cf-half { grid-template-columns: 1fr; }
       .cf-half .cf-row:first-child { border-right: none; border-bottom: 1.5px solid #d1d1d6; }
-      .checkout-wrap { padding: 0 10px; margin: 14px auto; }
+      .pay-tabs { flex-direction: column; }
+      .pay-tab-btn { min-width: unset; }
     }
   </style>
 </head>
@@ -152,6 +173,18 @@
 
 <!-- CHECKOUT VIEW -->
 <div id="checkout-view">
+
+<!-- MOBILE ORDER SUMMARY TOGGLE BAR (hidden on desktop) -->
+<div class="mobile-summary-bar" onclick="toggleMobileSummary()" id="mobile-bar">
+  <div class="mobile-summary-left">
+    <svg id="mobile-bar-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M2 4.5L7 9.5L12 4.5" stroke="#C0162C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Afficher le récapitulatif de la commande
+  </div>
+  <div class="mobile-summary-total" id="mobile-bar-total">CA$149.99</div>
+</div>
+
 <div class="checkout-wrap">
 
   <!-- LEFT: FORM -->
@@ -253,7 +286,7 @@
           Carte de crédit
         </button>
         <!-- PayPal: set display:flex to enable -->
-        <button class="pay-tab-btn" id="paypal-btn" onclick="switchTab('paypal')" style="display:none">
+        <button class="pay-tab-btn" id="paypal-btn" onclick="switchTab('paypal')" style="display:flex">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7.8 2h7.6C18.1 2 20 3.9 20 6.3c0 3.9-2.7 6.2-6.6 6.2H11l-1 6H6.5L9 2H7.8z" fill="#003087"/></svg>
           PayPal
         </button>
@@ -385,6 +418,21 @@ function switchTab(t) {
   document.querySelectorAll('.pay-tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('tab-'+t).classList.add('active');
   document.querySelector('[onclick="switchTab(\''+t+'\')"]').classList.add('active');
+}
+
+function toggleMobileSummary() {
+  var col = document.querySelector('.right-col');
+  var arrow = document.getElementById('mobile-bar-arrow');
+  var label = document.querySelector('.mobile-summary-left');
+  if (col.classList.contains('mobile-open')) {
+    col.classList.remove('mobile-open');
+    arrow.classList.remove('open');
+    label.lastChild.textContent = ' Afficher le récapitulatif de la commande';
+  } else {
+    col.classList.add('mobile-open');
+    arrow.classList.add('open');
+    label.lastChild.textContent = ' Masquer le récapitulatif';
+  }
 }
 
 function toast(msg, ok) {
